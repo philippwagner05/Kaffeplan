@@ -7,8 +7,63 @@ namespace Company.TestProject1;
 [TestClass]
 public class PlanungsServiceTests
 {
+    private int testjahr = 2027;
     [TestMethod]
     public void Sichtpruefung_PlanAusgeben()
+    {
+        var plan = ErzeugeTestplan(testjahr);
+
+        foreach (var e in plan.Eintraege)
+        {
+            // Console.WriteLine($"KW {e.Kalenderwoche:D2} | {e.MontagDatum:dd.MM.yyyy} | " +
+            //                   $"{e.MitarbeiterName,-10} | {e.Aufgabenart}");
+        }
+    }
+    [TestMethod]
+    public void ErzeugePlan_2027_ReinigungenSindAusgeglichen()
+    {
+        var plan = ErzeugeTestplan(testjahr);
+
+        var proPerson = plan.ReinigungProMitarbeiter();
+        int max = proPerson.Values.Max();
+        int min = proPerson.Values.Min();
+
+        Assert.IsTrue(max - min <= 1,
+        $"Reinigungen sind ungleich verteilt: min={min}, max={max}");
+
+        Console.WriteLine($"Max {max} Min {min}");
+    }
+    
+    [TestMethod]
+    public void ErzeugePlan_2027_FiltertauscheSindAusgeglichen()
+    {
+        var plan = ErzeugeTestplan(testjahr);
+
+        var proPerson = plan.FiltertauschProMitarbeiter();
+        int max = proPerson.Values.Max();
+        int min = proPerson.Values.Min();
+
+        Console.WriteLine($"Max={max} Min={min}");
+
+        Assert.IsTrue(max - min <= 1,
+        $"Filtertausche sind ungleich verteilt: min={min}, max={max}. " +
+        string.Join(", ", proPerson.Select(p => $"{p.Key}={p.Value}")));
+        
+    }
+
+    [TestMethod]
+    public void ErzeugePlan_2027_NiemandZweimalHintereinandner()
+    {
+        var plan = ErzeugeTestplan(testjahr);
+        var e = plan.Eintraege.OrderBy(x => x.Kalenderwoche).ToList();
+
+        for (int i = 1; i < e.Count; i++)
+        {
+            Assert.AreNotEqual(e[i - 1].MitarbeiterName, e[i].MitarbeiterName,
+                $"KW {e[i].Kalenderwoche}: {e[i].MitarbeiterName} ist zweimal hinterinander dran.");
+        }
+    }
+    private static Jahresplan ErzeugeTestplan(int jahr)
     {
         var team = new List<Mitarbeiter>
         {
@@ -18,12 +73,8 @@ public class PlanungsServiceTests
         };
 
         var service = new PlanungsService(new KalenderService());
-        var plan = service.ErzeugePlan(2027, team);
+        var plan = service.ErzeugePlan(jahr, team);
 
-        foreach (var e in plan.Eintraege)
-        {
-            Console.WriteLine($"KW {e.Kalenderwoche:D2} | {e.MontagDatum:dd.MM.yyyy} | " +
-                              $"{e.MitarbeiterName,-10} | {e.Aufgabenart}");
-        }
+        return plan;
     }
 }
