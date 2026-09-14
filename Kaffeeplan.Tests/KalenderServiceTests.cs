@@ -11,9 +11,9 @@ public class KalenderServiceTests
     {
         var service = new KalenderService();
 
-        int ergebnis = service.WochenImJahr(2027);
+        int ergebnis = service.WochenImJahr(2032);
 
-        Assert.AreEqual(52, ergebnis);
+        Assert.AreEqual(53, ergebnis);
     }
 
     [TestMethod]
@@ -24,5 +24,14 @@ public class KalenderServiceTests
         DateOnly ergebnis = service.MontageDerWoche(2027, 9);
 
         Assert.AreEqual(new DateOnly(2027, 3, 1), ergebnis);
+    }
+
+    [TestMethod]
+    public void MontagDerWoche_UngueltigeWoche_WirftException()
+    {
+        var service = new KalenderService();
+
+        Assert.ThrowsExactly<ArgumentOutOfRangeException>(
+            () => service.MontageDerWoche(2027, 53));
     }
 }
