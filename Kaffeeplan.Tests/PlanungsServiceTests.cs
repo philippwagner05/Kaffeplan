@@ -15,8 +15,8 @@ public class PlanungsServiceTests
 
         foreach (var e in plan.Eintraege)
         {
-            // Console.WriteLine($"KW {e.Kalenderwoche:D2} | {e.MontagDatum:dd.MM.yyyy} | " +
-            //                   $"{e.MitarbeiterName,-10} | {e.Aufgabenart}");
+            Console.WriteLine($"KW {e.Kalenderwoche:D2} | {e.MontagDatum:dd.MM.yyyy} | " +
+                              $"{e.MitarbeiterName,-10} | {e.Aufgabenart}");
         }
     }
     [TestMethod]
@@ -28,8 +28,7 @@ public class PlanungsServiceTests
         int max = proPerson.Values.Max();
         int min = proPerson.Values.Min();
 
-        Assert.IsTrue(max - min <= 1,
-        $"Reinigungen sind ungleich verteilt: min={min}, max={max}");
+        Assert.IsLessThanOrEqualTo(1, max - min, $"Reinigungen sind ungleich verteilt: min={min}, max={max}");
 
         Console.WriteLine($"Max {max} Min {min}");
     }
@@ -42,11 +41,12 @@ public class PlanungsServiceTests
         var proPerson = plan.FiltertauschProMitarbeiter();
         int max = proPerson.Values.Max();
         int min = proPerson.Values.Min();
+        var anderstelle = proPerson.Values;
+        Console.WriteLine(anderstelle);
 
-        Console.WriteLine($"Max={max} Min={min}");
+        // Console.WriteLine($"Max={max} Min={min}");
 
-        Assert.IsTrue(max - min <= 1,
-        $"Filtertausche sind ungleich verteilt: min={min}, max={max}. " +
+        Assert.IsLessThanOrEqualTo(1, max - min, $"Filtertausche sind ungleich verteilt: min={min}, max={max}. " +
         string.Join(", ", proPerson.Select(p => $"{p.Key}={p.Value}")));
         
     }
