@@ -69,7 +69,9 @@ public class PlanungsServiceTests
         {
             new() { Name = "Ralf" }, new() { Name = "Jochen"},
             new() { Name = "Mario"}, new() { Name = "Gabriel"},
-            new() { Name = "Ehsan"}, new() { Name = "Shariyar"}
+            new() { Name = "Ehsan"}, new() { Name = "Shariyar"},
+            new() { Name = "Philipp"}, new() { Name = "Michi"},
+            new() { Name = "Bernhard"}, new() { Name = "Wolfi"}
         };
 
         var service = new PlanungsService(new KalenderService());

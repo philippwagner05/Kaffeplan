@@ -1,3 +1,6 @@
+using System.Net.NetworkInformation;
+using System.Reflection.Metadata.Ecma335;
+using System.Runtime.InteropServices.Marshalling;
 using Kaffeeplan.Core.Model;
 
 namespace Kaffeeplan.Core.Services;
@@ -16,33 +19,106 @@ public class PlanungsService
         IReadOnlyList<Mitarbeiter> mitarbeiter,
         int filterRhythmus = 8)
     {
-        if(mitarbeiter.Count == 0 || filterRhythmus < 1)
-        {
-            throw new ArgumentOutOfRangeException();
-        }   
+        ArgumentNullException.ThrowIfNull(mitarbeiter);
+        if (mitarbeiter.Count == 0)
+            throw new ArgumentOutOfRangeException(nameof(filterRhythmus));
 
-        var jahresplan = new Jahresplan();
-        var wochen = _kalender.WochenImJahr(jahr);
+        int wochen = _kalender.WochenImJahr(jahr);
+
+        var reinigungen = new int[mitarbeiter.Count];
+        var filter      = new int[mitarbeiter.Count];
+        var letzteWoche  = new int[mitarbeiter.Count];
+        Array.Fill(letzteWoche, int.MinValue);
+
+        var plan = new Jahresplan { Jahr = jahr };
 
         for (int woche = 1; woche <= wochen; woche++)
         {
-            var person = mitarbeiter[(woche - 1) % mitarbeiter.Count];
+            bool istFilterwoche = (woche - 1) % filterRhythmus == 0;
+
+            int gewaehlt = WaehleMitarbeiter(
+                mitarbeiter.Count, istFilterwoche, reinigungen, filter, letzteWoche);
+            
             var aufgaben = Aufgabenart.Reinigung;
-            if ((woche - 1) % filterRhythmus == 0)
+            reinigungen[gewaehlt] += 1;
+            if (istFilterwoche)
             {
                 aufgaben |= Aufgabenart.Filtertausch;
+                filter[gewaehlt] += 1;
             }
             var planeintrag = new Planeintrag
             {
                 Kalenderwoche = woche,
-                MitarbeiterName = person.Name,
+                MitarbeiterName = mitarbeiter[gewaehlt].Name,
                 MontagDatum = _kalender.MontageDerWoche(jahr, woche),
                 Aufgabenart = aufgaben
-
             };
 
-            jahresplan.Eintraege.Add(planeintrag); 
-        }
-        return jahresplan;
+            plan.Eintraege.Add(planeintrag);
+
+            letzteWoche[gewaehlt] = woche;
+        } 
+
+        return plan;
     }
+
+    private static int WaehleMitarbeiter(
+        int anzahl, bool istFilterwoche, int[] reinigungen, int[] filter, int [] letzteWoche)
+    {
+        int besterIndex = 0;
+
+        for (int i = 1; i < anzahl; i++)
+        {
+            if (IstBesser(i, besterIndex, istFilterwoche, reinigungen, filter, letzteWoche))
+                besterIndex = i;
+        }
+        
+        return besterIndex;
+    }
+
+    private static bool IstBesser(
+        int kandidat, int bisher, bool istFilterwoche,
+        int[] reinigungen, int[] filter, int[] letzeWoche)
+    {
+        if (istFilterwoche)
+        {
+            if (filter[kandidat] < filter[bisher])
+                return true;
+        }
+        if (reinigungen[kandidat] < reinigungen[bisher])
+            return true;
+        // if (letzeWoche[kandidat] != bisher)
+        //     return true;
+        return false;
+    }
+
+
+    //     if(mitarbeiter.Count == 0 || filterRhythmus < 1)
+    //     {
+    //         throw new ArgumentOutOfRangeException();
+    //     }   
+
+    //     var jahresplan = new Jahresplan();
+    //     var wochen = _kalender.WochenImJahr(jahr);
+
+    //     for (int woche = 1; woche <= wochen; woche++)
+    //     {
+    //         var person = mitarbeiter[(woche - 1) % mitarbeiter.Count];
+    //         var aufgaben = Aufgabenart.Reinigung;
+    //         if ((woche - 1) % filterRhythmus == 0)
+    //         {
+    //             aufgaben |= Aufgabenart.Filtertausch;
+    //         }
+    //         var planeintrag = new Planeintrag
+    //         {
+    //             Kalenderwoche = woche,
+    //             MitarbeiterName = person.Name,
+    //             MontagDatum = _kalender.MontageDerWoche(jahr, woche),
+    //             Aufgabenart = aufgaben
+
+    //         };
+
+    //         jahresplan.Eintraege.Add(planeintrag); 
+    // }
+    //     return jahresplan;
 }
