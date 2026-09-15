@@ -20,7 +20,7 @@ public class PlanungsService
         int filterRhythmus = 8)
     {
         ArgumentNullException.ThrowIfNull(mitarbeiter);
-        if (mitarbeiter.Count == 0)
+        if (mitarbeiter.Count <= 1)
             throw new ArgumentOutOfRangeException(nameof(filterRhythmus));
 
         int wochen = _kalender.WochenImJahr(jahr);
@@ -87,38 +87,7 @@ public class PlanungsService
         }
         if (reinigungen[kandidat] < reinigungen[bisher])
             return true;
-        // if (letzeWoche[kandidat] != bisher)
-        //     return true;
         return false;
     }
 
-
-    //     if(mitarbeiter.Count == 0 || filterRhythmus < 1)
-    //     {
-    //         throw new ArgumentOutOfRangeException();
-    //     }   
-
-    //     var jahresplan = new Jahresplan();
-    //     var wochen = _kalender.WochenImJahr(jahr);
-
-    //     for (int woche = 1; woche <= wochen; woche++)
-    //     {
-    //         var person = mitarbeiter[(woche - 1) % mitarbeiter.Count];
-    //         var aufgaben = Aufgabenart.Reinigung;
-    //         if ((woche - 1) % filterRhythmus == 0)
-    //         {
-    //             aufgaben |= Aufgabenart.Filtertausch;
-    //         }
-    //         var planeintrag = new Planeintrag
-    //         {
-    //             Kalenderwoche = woche,
-    //             MitarbeiterName = person.Name,
-    //             MontagDatum = _kalender.MontageDerWoche(jahr, woche),
-    //             Aufgabenart = aufgaben
-
-    //         };
-
-    //         jahresplan.Eintraege.Add(planeintrag); 
-    // }
-    //     return jahresplan;
 }
