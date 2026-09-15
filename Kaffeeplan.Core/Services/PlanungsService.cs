@@ -87,6 +87,8 @@ public class PlanungsService
         }
         if (reinigungen[kandidat] < reinigungen[bisher])
             return true;
+        if (letzeWoche[kandidat] < letzeWoche[bisher])
+            return true;
         return false;
     }
 

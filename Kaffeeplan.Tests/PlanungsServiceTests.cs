@@ -44,7 +44,7 @@ public class PlanungsServiceTests
         var anderstelle = proPerson.Values;
         Console.WriteLine(anderstelle);
 
-        // Console.WriteLine($"Max={max} Min={min}");
+        Console.WriteLine($"Max={max} Min={min}");
 
         Assert.IsLessThanOrEqualTo(1, max - min, $"Filtertausche sind ungleich verteilt: min={min}, max={max}. " +
         string.Join(", ", proPerson.Select(p => $"{p.Key}={p.Value}")));
