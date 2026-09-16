@@ -4,6 +4,10 @@
     <ProjectReference Include="..\Kaffeeplan.Core\Kaffeeplan.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="System\Windows\" />
+  </ItemGroup>
+
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net10.0-windows</TargetFramework>

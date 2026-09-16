@@ -6,6 +6,6 @@ public class Planeintrag
     public DateOnly MontagDatum { get; set; }
     public string MitarbeiterName { get; set; } = string.Empty;
     public Aufgabenart Aufgabenart { get; set; }
-    public Aufgabenart HatFiltertausch { get; set; } = Aufgabenart.Keine;
+    public bool HatFiltertausch => Aufgabenart.HasFlag(Aufgabenart.Filtertausch);
     
 }
