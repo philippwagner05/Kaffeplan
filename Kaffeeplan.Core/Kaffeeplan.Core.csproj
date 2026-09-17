@@ -6,4 +6,10 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Remove="Persistenz\Test\**" />
+    <EmbeddedResource Remove="Persistenz\Test\**" />
+    <None Remove="Persistenz\Test\**" />
+  </ItemGroup>
+
 </Project>

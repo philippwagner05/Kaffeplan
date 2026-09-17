@@ -1,7 +1,7 @@
-﻿namespace Kaffeeplan.Tests;
+namespace Kaffeeplan.Tests;
 
 [TestClass]
-public sealed class Test1
+public class CsvTests
 {
     [TestMethod]
     public void TestMethod1()
