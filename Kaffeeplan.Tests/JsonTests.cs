@@ -1,6 +1,7 @@
 using Kaffeeplan.Core.Model;
 using Kaffeeplan.Core.Persistenz;
 using Kaffeeplan.Core.Services;
+using System.Xml.Serialization;
 
 namespace Kaffeeplan.Tests;
 
@@ -35,10 +36,31 @@ public class JsonTests
         }
     }
 
+    [TestMethod]
+    public void NichtVorhandeneDateiLaden()
+    {
+        //string path = $"C:\\Users\\wagner_p\\Documents\\Philipp Wagner\\Kaffeplan\\03_Code\\Stage1-Classic\\Kaffeeplan.Core\\Persistenz\\Data\\JSON\\JsonPlan-{Jahr}.json";
+        Assert.ThrowsExactly<FileNotFoundException>(
+            () => _jsonSpeichern.Laden<Jahresplan>(Path.GetTempPath() + "JsonTestPlan-GIBTESNICHT.json"));
+        //Assert.ThrowsExactly<FileNotFoundException>(
+        //    () => _jsonSpeichern.Laden<Jahresplan>(path));
+    }
+
+    [TestMethod]
+    public void FehlerHafteDateiLaden()
+    {
+        string korrupterinhalt = "AUF gar keinen Fall typtische JSON Systax .,,.., .::: .,. .,. ,., . :,. , ich ,.,.du 4990309434324";
+
+        _jsonSpeichern.Speichern(korrupterinhalt, Path.GetTempPath() + "korruptionstest.json");
+        Assert.Throws<Exception>(
+            () => _jsonSpeichern.Laden<Jahresplan>(Path.GetTempPath() + "korruptionstest.json"));
+    }
+
     [TestCleanup]
     public void LoescheTestDaten()
     {
         File.Delete(Path.GetTempPath() + $"JsonTestPlan-{Jahr}.json");
+        File.Delete(Path.GetTempPath() + "korruptionstest.json");
     }
 
     private static Jahresplan ErzeugeTestplan(int jahr)

@@ -45,6 +45,7 @@ namespace Kaffeeplan.App.ViewModels
         public ICommand CsvExportCommand { get; }
         private readonly PlanungsService _planungsService = new(new KalenderService());
         private readonly JsonSpeicher _jsonSpeichern = new();
+         //private readonly CsvSpeicher _csvSpeicher = new();
         public MainViewModel()
         {
             //var plan = _jsonSpeichern.Laden<Jahresplan>($"C:\\Users\\wagner_p\\Documents\\Philipp Wagner\\Kaffeplan\\03_Code\\Stage1-Classic\\Kaffeeplan.Core\\Persistenz\\Data\\JsonPlan-{Jahr}.json");
@@ -57,7 +58,7 @@ namespace Kaffeeplan.App.ViewModels
             SpeichernCommand = new RelayCommand(SpeicherePlan, () => plan != null);
             LadenCommand = new RelayCommand(LadePlan, () => true);
             PlanLoeschenCommand = new RelayCommand(LöschePlan, () => true);
-            CsvExportCommand = new RelayCommand(Exportiere, () => plan != null);
+            CsvExportCommand = new RelayCommand(CSVExport, () => plan != null);
         }
 
         private void LadePlan()
@@ -65,7 +66,7 @@ namespace Kaffeeplan.App.ViewModels
 
             try
             {
-                plan = _jsonSpeichern.Laden<Jahresplan>($"C:\\Users\\wagner_p\\Documents\\Philipp Wagner\\Kaffeplan\\03_Code\\Stage1-Classic\\Kaffeeplan.Core\\Persistenz\\Data\\JsonPlan-{Jahr}.json");
+                plan = _jsonSpeichern.Laden<Jahresplan>($"C:\\Users\\wagner_p\\Documents\\Philipp Wagner\\Kaffeplan\\03_Code\\Stage1-Classic\\Kaffeeplan.Core\\Persistenz\\Data\\JSON\\JsonPlan-{Jahr}.json");
                 if (plan == null)
                     Statusmeldung = $"Plan für das Jahr {Jahr} konnte nicht geladen werden.";
                 else
@@ -107,7 +108,7 @@ namespace Kaffeeplan.App.ViewModels
         {
             try
             {
-                _jsonSpeichern.Speichern(plan, $"C:\\Users\\wagner_p\\Documents\\Philipp Wagner\\Kaffeplan\\03_Code\\Stage1-Classic\\Kaffeeplan.Core\\Persistenz\\Data\\JsonPlan-{Jahr}.json");
+                _jsonSpeichern.Speichern(plan, $"C:\\Users\\wagner_p\\Documents\\Philipp Wagner\\Kaffeplan\\03_Code\\Stage1-Classic\\Kaffeeplan.Core\\Persistenz\\Data\\JSON\\JsonPlan-{Jahr}.json");
                 Statusmeldung = $"Plan für Jahr {Jahr} wurde erfolgreich gespeichert.";
             }
             catch (Exception ex)
@@ -118,9 +119,9 @@ namespace Kaffeeplan.App.ViewModels
 
         private void LöschePlan()
         {
-            if (File.Exists($"C:\\Users\\wagner_p\\Documents\\Philipp Wagner\\Kaffeplan\\03_Code\\Stage1-Classic\\Kaffeeplan.Core\\Persistenz\\Data\\JsonPlan-{Jahr}.json"))
+            if (File.Exists($"C:\\Users\\wagner_p\\Documents\\Philipp Wagner\\Kaffeplan\\03_Code\\Stage1-Classic\\Kaffeeplan.Core\\Persistenz\\Data\\JSON\\JsonPlan-{Jahr}.json"))
             {
-                File.Delete($"C:\\Users\\wagner_p\\Documents\\Philipp Wagner\\Kaffeplan\\03_Code\\Stage1-Classic\\Kaffeeplan.Core\\Persistenz\\Data\\JsonPlan-{Jahr}.json");
+                File.Delete($"C:\\Users\\wagner_p\\Documents\\Philipp Wagner\\Kaffeplan\\03_Code\\Stage1-Classic\\Kaffeeplan.Core\\Persistenz\\Data\\JSON\\JsonPlan-{Jahr}.json");
                 Statusmeldung = $"Die Datei JsonPlan-{Jahr}.json wurde erfolgreich gelöscht.";
             }
             else
@@ -186,40 +187,17 @@ namespace Kaffeeplan.App.ViewModels
             Mitarbeiter.Remove(GewaehlterMitarbeiter);
         }
 
-        public void Exportiere()
+        public void CSVExport()
         {
             try
             {
-                var dir = Path.GetDirectoryName($"C:\\Users\\wagner_p\\Documents\\Philipp Wagner\\Kaffeplan\\03_Code\\Stage1-Classic\\Kaffeeplan.Core\\Persistenz\\Data\\CSV\\CSVExport-{Jahr}.csv");
-                if (!string.IsNullOrEmpty(dir))
-                    Directory.CreateDirectory(dir);
-                var sb = new StringBuilder();
-                sb.AppendLine("KW;Montag;Mitarbeiter;Reinigung;Filtertausch");
-
-                foreach (var e in plan.Eintraege.OrderBy(x => x.Kalenderwoche))
-                {
-                    sb.AppendLine($"{e.Kalenderwoche};{e.MontagDatum:dd.MM.yyyy};" +
-                                  $"{Maskiere(e.MitarbeiterName)};ja;{(e.HatFiltertausch ? "ja" : "nein")}");
-                }
-                File.WriteAllText($"C:\\Users\\wagner_p\\Documents\\Philipp Wagner\\Kaffeplan\\03_Code\\Stage1-Classic\\Kaffeeplan.Core\\Persistenz\\Data\\CSV\\CSVExport-{Jahr}.csv", sb.ToString());
+                CsvSpeicher.Exportiere(plan, $"C:\\Users\\wagner_p\\Documents\\Philipp Wagner\\Kaffeplan\\03_Code\\Stage1-Classic\\Kaffeeplan.Core\\Persistenz\\Data\\CSV\\CSVExport-{Jahr}.csv");
+                Statusmeldung = $"Plan für Jahr {Jahr} wurde erfolgreich als CSV-Datei exportiert.";
             }
             catch (Exception ex)
             {
                 Statusmeldung = ex.Message;
             }
-        }
-
-        private static string Maskiere(string wert)
-        {
-            if (string.IsNullOrEmpty(wert))
-                return string.Empty;
-            // ; " \n \r
-            // He said "HI" => "He said ""HI"""
-            if (wert.Contains(';') || wert.Contains('"') || wert.Contains('\n') || wert.Contains('\r'))
-            {
-                return "\"" + wert.Replace("\"", "\"\"") + "\"";
-            }
-            return wert;
         }
     }
 
