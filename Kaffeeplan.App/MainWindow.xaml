@@ -1,8 +1,11 @@
 ﻿<Window x:Class="Kaffeeplan.App.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:converters="clr-namespace:Kaffeeplan.App.Converters"
         Title="Kaffemaschinen-Dienstplan" Height="700" Width="1100">
-
+    <Window.Resources>
+        <converters:NullToIntConverter x:Key="NullToIntConverter" />
+    </Window.Resources>
     <Grid Margin="12">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -13,7 +16,7 @@
         <!-- Kopfzeile -->
         <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,12">
             <TextBlock Text="Jahr" VerticalAlignment="Center" Margin="0,0,8,0" />
-            <TextBox Text="{Binding Jahr, UpdateSourceTrigger=PropertyChanged}"
+            <TextBox Text="{Binding Jahr, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource NullToIntConverter}}"
                      Width="70" VerticalAlignment="Center" />
             <Button Content="Plan erzeugen" Command="{Binding PlanErzeugenCommand}"
                     Margin="12,0,0,0" Padding="12,4" />

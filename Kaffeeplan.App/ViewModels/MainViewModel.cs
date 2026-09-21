@@ -7,12 +7,14 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Globalization;
 using System.IO;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Json.Nodes;
 using System.Windows;
+using System.Windows.Data;
 using System.Windows.Input;
 using static System.Net.Mime.MediaTypeNames;
 
@@ -20,7 +22,11 @@ namespace Kaffeeplan.App.ViewModels
 {
     public class MainViewModel : ViewModelBasis
     {
-        public int Jahr { get; set; } = 2026;
+        public int Jahr {
+            get;
+            set => SetzeWert(ref field, value);
+        } = 2026;
+
         private Jahresplan? plan;
         public Mitarbeiter GewaehlterMitarbeiter
         {
@@ -49,11 +55,17 @@ namespace Kaffeeplan.App.ViewModels
         public MainViewModel()
         {
             //var plan = _jsonSpeichern.Laden<Jahresplan>($"C:\\Users\\wagner_p\\Documents\\Philipp Wagner\\Kaffeplan\\03_Code\\Stage1-Classic\\Kaffeeplan.Core\\Persistenz\\Data\\JsonPlan-{Jahr}.json");
-            foreach (var name in new string[] { "Ralf", "Jochen", "Mario", "Gabriel", "Ehsan", "Shariyar", "Philipp", "Michi", "Bernhard", "Wolfi" })
+            foreach (var name in new string[] { "Ralf", "Jochen", "Mario", "Gabriel", "Ehsan", "Shariyar", "Philipp", "Michi", "Bernhard", "Wolfi"
+                                                //"Andreas", "Stefan", "Thomas", "Matthias", "Sebastian", "Tobias", "Florian", "Lukas", "Daniel", "Christian",
+                                                //"Markus", "Dominik", "Fabian", "Julian", "Maximilian", "Benedikt", "Konstantin", "Leopold", "Moritz", "Niklas",
+                                                //"Oliver", "Patrick", "Quirin", "Raphael", "Simon", "Timo", "Ulrich", "Valentin", "Wilhelm", "Xaver",
+                                                //"Yannick", "Zacharias", "Amir", "Behrouz", "Cemal", "Dimitri", "Emre", "Farid", "Giorgio", "Hakan",
+                                                //"Ibrahim", "Jamal"
+                                                })
                 Mitarbeiter.Add(new Mitarbeiter { Name = name });
             GewaehlterMitarbeiter = Mitarbeiter[0];
             PlanErzeugenCommand = new RelayCommand(GenerierePlan, () => Mitarbeiter.Count > 1);
-            MitarbeiterHinzufuegenCommand = new RelayCommand(fuegeMitarbeiterhinzu, () => Mitarbeiter.Count < 12);
+            MitarbeiterHinzufuegenCommand = new RelayCommand(fuegeMitarbeiterhinzu, () => Mitarbeiter.Count < 52);
             MitarbeiterEntfernenCommand = new RelayCommand(entferneMitarbeiter, () => Mitarbeiter.Count > 0);
             SpeichernCommand = new RelayCommand(SpeicherePlan, () => plan != null);
             LadenCommand = new RelayCommand(LadePlan, () => true);
@@ -178,6 +190,13 @@ namespace Kaffeeplan.App.ViewModels
                     return;
                 }
             }
+
+            if (string.IsNullOrWhiteSpace(neuermitarbeiter))
+            {
+                Statusmeldung = "Mitarbeitername darf nicht leer sein!";
+                return;
+            }
+
             Statusmeldung = "Mitarbeiter erfolgreich hinzugefügt.";
             Mitarbeiter.Add(new Mitarbeiter { Name = neuermitarbeiter });
         }
@@ -192,6 +211,8 @@ namespace Kaffeeplan.App.ViewModels
             try
             {
                 CsvSpeicher.Exportiere(plan, $"C:\\Users\\wagner_p\\Documents\\Philipp Wagner\\Kaffeplan\\03_Code\\Stage1-Classic\\Kaffeeplan.Core\\Persistenz\\Data\\CSV\\CSVExport-{Jahr}.csv");
+                //CsvSpeicher.Exportiere(plan, $"C:\\Program Files\\CSVExport-{Jahr}.csv");
+
                 Statusmeldung = $"Plan für Jahr {Jahr} wurde erfolgreich als CSV-Datei exportiert.";
             }
             catch (Exception ex)

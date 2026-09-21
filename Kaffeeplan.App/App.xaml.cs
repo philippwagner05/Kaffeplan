@@ -17,5 +17,16 @@ public partial class App : Application
         Thread.CurrentThread.CurrentCulture = ci;
         Thread.CurrentThread.CurrentUICulture = ci;
     }
+
+    protected override void OnStartup(StartupEventArgs e)
+    {
+        DispatcherUnhandledException += (s, args) =>
+        {
+            MessageBox.Show($"Unerwarteter Fehler:\n\n{args.Exception.Message}",
+                            "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
+        };
+
+        base.OnStartup(e);
+    }
 }
 
