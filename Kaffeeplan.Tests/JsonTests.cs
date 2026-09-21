@@ -39,11 +39,8 @@ public class JsonTests
     [TestMethod]
     public void NichtVorhandeneDateiLaden()
     {
-        //string path = $"C:\\Users\\wagner_p\\Documents\\Philipp Wagner\\Kaffeplan\\03_Code\\Stage1-Classic\\Kaffeeplan.Core\\Persistenz\\Data\\JSON\\JsonPlan-{Jahr}.json";
         Assert.ThrowsExactly<FileNotFoundException>(
             () => _jsonSpeichern.Laden<Jahresplan>(Path.GetTempPath() + "JsonTestPlan-GIBTESNICHT.json"));
-        //Assert.ThrowsExactly<FileNotFoundException>(
-        //    () => _jsonSpeichern.Laden<Jahresplan>(path));
     }
 
     [TestMethod]

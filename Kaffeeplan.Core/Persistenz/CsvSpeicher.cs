@@ -28,8 +28,6 @@ namespace Kaffeeplan.Core.Persistenz
         {
             if (string.IsNullOrEmpty(wert))
                 return string.Empty;
-            // ; " \n \r
-            // He said "HI" => "He said ""HI"""
             if (wert.Contains(';') || wert.Contains('"') || wert.Contains('\n') || wert.Contains('\r'))
             {
                 return "\"" + wert.Replace("\"", "\"\"") + "\"";

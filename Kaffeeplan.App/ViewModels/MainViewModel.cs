@@ -54,14 +54,7 @@ namespace Kaffeeplan.App.ViewModels
          //private readonly CsvSpeicher _csvSpeicher = new();
         public MainViewModel()
         {
-            //var plan = _jsonSpeichern.Laden<Jahresplan>($"C:\\Users\\wagner_p\\Documents\\Philipp Wagner\\Kaffeplan\\03_Code\\Stage1-Classic\\Kaffeeplan.Core\\Persistenz\\Data\\JsonPlan-{Jahr}.json");
-            foreach (var name in new string[] { "Ralf", "Jochen", "Mario", "Gabriel", "Ehsan", "Shariyar", "Philipp", "Michi", "Bernhard", "Wolfi"
-                                                //"Andreas", "Stefan", "Thomas", "Matthias", "Sebastian", "Tobias", "Florian", "Lukas", "Daniel", "Christian",
-                                                //"Markus", "Dominik", "Fabian", "Julian", "Maximilian", "Benedikt", "Konstantin", "Leopold", "Moritz", "Niklas",
-                                                //"Oliver", "Patrick", "Quirin", "Raphael", "Simon", "Timo", "Ulrich", "Valentin", "Wilhelm", "Xaver",
-                                                //"Yannick", "Zacharias", "Amir", "Behrouz", "Cemal", "Dimitri", "Emre", "Farid", "Giorgio", "Hakan",
-                                                //"Ibrahim", "Jamal"
-                                                })
+            foreach (var name in new string[] { "Ralf", "Jochen", "Mario", "Gabriel", "Ehsan", "Shariyar", "Philipp", "Michi", "Bernhard", "Wolfi"})
                 Mitarbeiter.Add(new Mitarbeiter { Name = name });
             GewaehlterMitarbeiter = Mitarbeiter[0];
             PlanErzeugenCommand = new RelayCommand(GenerierePlan, () => Mitarbeiter.Count > 1);
@@ -100,10 +93,6 @@ namespace Kaffeeplan.App.ViewModels
             foreach (var item in plan.Eintraege)
             {
                 var name = item.MitarbeiterName;
-                //if (!Mitarbeiter.Any(m => m.Name == name))
-                //{
-                //    Mitarbeiter.Add(new Mitarbeiter { Name = name });
-                //}
                 bool hinzufuegen = true;
                 foreach (var check in Mitarbeiter)
                 {
@@ -211,8 +200,6 @@ namespace Kaffeeplan.App.ViewModels
             try
             {
                 CsvSpeicher.Exportiere(plan, $"C:\\Users\\wagner_p\\Documents\\Philipp Wagner\\Kaffeplan\\03_Code\\Stage1-Classic\\Kaffeeplan.Core\\Persistenz\\Data\\CSV\\CSVExport-{Jahr}.csv");
-                //CsvSpeicher.Exportiere(plan, $"C:\\Program Files\\CSVExport-{Jahr}.csv");
-
                 Statusmeldung = $"Plan für Jahr {Jahr} wurde erfolgreich als CSV-Datei exportiert.";
             }
             catch (Exception ex)

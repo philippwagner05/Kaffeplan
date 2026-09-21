@@ -13,7 +13,6 @@ public class CsvTests
     {
         string test = "Cristiano; Ronaldo";
         string erwartet = "\"Cristiano; Ronaldo\"";
-        // "Cristiano; Ronaldo" => "\"Cristiano; Ronaldo\""
         var maskiert = CsvSpeicher.Maskiere(test);
         Assert.AreEqual(erwartet, maskiert);
     }
