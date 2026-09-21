@@ -41,8 +41,6 @@ public class PlanungsServiceTests
         var proPerson = plan.FiltertauschProMitarbeiter();
         int max = proPerson.Values.Max();
         int min = proPerson.Values.Min();
-        var anderstelle = proPerson.Values;
-        Console.WriteLine(anderstelle);
 
         Console.WriteLine($"Max={max} Min={min}");
 

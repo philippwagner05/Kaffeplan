@@ -16,8 +16,6 @@ public class JsonTests
     {
         var plan = ErzeugeTestplan(Jahr);
 
-        Console.WriteLine(Path.GetTempPath() + $"JsonTestPlan-{Jahr}.json");
-
         _jsonSpeichern.Speichern(plan, Path.GetTempPath() + $"JsonTestPlan-{Jahr}.json");
 
         var geladenerplan = _jsonSpeichern.Laden<Jahresplan>(Path.GetTempPath() + $"JsonTestPlan-{Jahr}.json");
