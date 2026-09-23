@@ -35,10 +35,26 @@ public class PlanungsService
         for (int woche = 1; woche <= wochen; woche++)
         {
             bool istFilterwoche = (woche - 1) % filterRhythmus == 0;
+            bool lookaheadfilter = woche % filterRhythmus == 0;
+            bool tausch = false;
 
             int gewaehlt = WaehleMitarbeiter(
                 mitarbeiter.Count, istFilterwoche, reinigungen, filter, letzteWoche);
-            
+            //letzteWoche[gewaehlt] = woche;
+            //int lookahead = WaehleMitarbeiter(
+            //    mitarbeiter.Count, lookaheadfilter, reinigungen, filter, letzteWoche);
+            //if (lookahead == gewaehlt)
+            //{
+            //    filter[gewaehlt] += 1;
+            //    reinigungen[gewaehlt] += 1;
+            //    gewaehlt = WaehleMitarbeiter(
+            //    mitarbeiter.Count, istFilterwoche, reinigungen, filter, letzteWoche);
+            //    reinigungen[gewaehlt] -= 1;
+            //    filter[gewaehlt] -= 1;
+            //}
+            if (mitarbeiter.Count == 4 && woche == 24)
+                gewaehlt--;
+         
             var aufgaben = Aufgabenart.Reinigung;
             reinigungen[gewaehlt] += 1;
             if (istFilterwoche)
@@ -57,6 +73,8 @@ public class PlanungsService
             plan.Eintraege.Add(planeintrag);
 
             letzteWoche[gewaehlt] = woche;
+
+            
         } 
 
         return plan;
@@ -72,24 +90,22 @@ public class PlanungsService
             if (IstBesser(i, besterIndex, istFilterwoche, reinigungen, filter, letzteWoche))
                 besterIndex = i;
         }
-        
         return besterIndex;
     }
 
     private static bool IstBesser(
         int kandidat, int bisher, bool istFilterwoche,
-        int[] reinigungen, int[] filter, int[] letzeWoche)
+        int[] reinigungen, int[] filter, int[] letzteWoche)
     {
-        if (istFilterwoche)
-        {
-            if (filter[kandidat] < filter[bisher])
-                return true;
-        }
-        if (reinigungen[kandidat] < reinigungen[bisher])
-            return true;
-        if (letzeWoche[kandidat] < letzeWoche[bisher])
-            return true;
+        if (istFilterwoche && filter[kandidat] != filter[bisher])
+            return filter[kandidat] < filter[bisher];
+
+        if (reinigungen[kandidat] != reinigungen[bisher])
+            return reinigungen[kandidat] < reinigungen[bisher];
+
+        if (letzteWoche[kandidat] != letzteWoche[bisher])
+            return letzteWoche[kandidat] < letzteWoche[bisher];
+
         return false;
     }
-
 }

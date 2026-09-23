@@ -21,7 +21,7 @@ namespace Kaffeeplan.Core.Persistenz
                 sb.AppendLine($"{e.Kalenderwoche};{e.MontagDatum:dd.MM.yyyy};" +
                               $"{Maskiere(e.MitarbeiterName)};ja;{(e.HatFiltertausch ? "ja" : "nein")}");
             }
-            File.WriteAllText(pfad, sb.ToString());
+            File.WriteAllText(pfad, sb.ToString(), new System.Text.UTF8Encoding(true));
         }
 
         public static string Maskiere(string wert)

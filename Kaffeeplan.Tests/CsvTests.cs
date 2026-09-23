@@ -25,9 +25,9 @@ public class CsvTests
         CsvSpeicher.Exportiere(plan, fullPath);
         var bytes = File.ReadAllBytes(fullPath);
         Assert.IsGreaterThanOrEqualTo(3, bytes.Length, "Datei ist zu kurz");
-        Assert.AreEqual(0x4B, bytes[0]);
-        Assert.AreEqual(0x57, bytes[1]);
-        Assert.AreEqual(0x3B, bytes[2]);
+        Assert.AreEqual(0xEF, bytes[0]);
+        Assert.AreEqual(0xBB, bytes[1]);
+        Assert.AreEqual(0xBF, bytes[2]);
     }
     [TestCleanup]
     public void LoescheTestDaten()

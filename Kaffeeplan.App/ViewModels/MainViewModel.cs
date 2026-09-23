@@ -22,6 +22,7 @@ namespace Kaffeeplan.App.ViewModels
 {
     public class MainViewModel : ViewModelBasis
     {
+        public string pfad = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
         public int Jahr {
             get;
             set => SetzeWert(ref field, value);
@@ -51,10 +52,9 @@ namespace Kaffeeplan.App.ViewModels
         public ICommand CsvExportCommand { get; }
         private readonly PlanungsService _planungsService = new(new KalenderService());
         private readonly JsonSpeicher _jsonSpeichern = new();
-         //private readonly CsvSpeicher _csvSpeicher = new();
         public MainViewModel()
         {
-            foreach (var name in new string[] { "Ralf", "Jochen", "Mario", "Gabriel", "Ehsan", "Shariyar", "Philipp", "Michi", "Bernhard", "Wolfi"})
+            foreach (var name in new string[] { "Ralf", "Jochen", "Mario", "Gabriel"/*, "Ehsan", "Shariyar", "Philipp", "Michi", "Bernhard", "Wolfi"*/})
                 Mitarbeiter.Add(new Mitarbeiter { Name = name });
             GewaehlterMitarbeiter = Mitarbeiter[0];
             PlanErzeugenCommand = new RelayCommand(GenerierePlan, () => Mitarbeiter.Count > 1);
@@ -71,7 +71,7 @@ namespace Kaffeeplan.App.ViewModels
 
             try
             {
-                plan = _jsonSpeichern.Laden<Jahresplan>($"C:\\Users\\wagner_p\\Documents\\Philipp Wagner\\Kaffeplan\\03_Code\\Stage1-Classic\\Kaffeeplan.Core\\Persistenz\\Data\\JSON\\JsonPlan-{Jahr}.json");
+                plan = _jsonSpeichern.Laden<Jahresplan>(pfad + $"\\Kaffeeplan\\Data\\JSON\\JsonPlan-{Jahr}.json");
                 if (plan == null)
                     Statusmeldung = $"Plan für das Jahr {Jahr} konnte nicht geladen werden.";
                 else
@@ -109,7 +109,7 @@ namespace Kaffeeplan.App.ViewModels
         {
             try
             {
-                _jsonSpeichern.Speichern(plan, $"C:\\Users\\wagner_p\\Documents\\Philipp Wagner\\Kaffeplan\\03_Code\\Stage1-Classic\\Kaffeeplan.Core\\Persistenz\\Data\\JSON\\JsonPlan-{Jahr}.json");
+                _jsonSpeichern.Speichern(plan, pfad + $"\\Kaffeeplan\\Data\\JSON\\JsonPlan-{Jahr}.json");
                 Statusmeldung = $"Plan für Jahr {Jahr} wurde erfolgreich gespeichert.";
             }
             catch (Exception ex)
@@ -120,9 +120,9 @@ namespace Kaffeeplan.App.ViewModels
 
         private void LöschePlan()
         {
-            if (File.Exists($"C:\\Users\\wagner_p\\Documents\\Philipp Wagner\\Kaffeplan\\03_Code\\Stage1-Classic\\Kaffeeplan.Core\\Persistenz\\Data\\JSON\\JsonPlan-{Jahr}.json"))
+            if (File.Exists(pfad + $"\\Kaffeeplan\\Data\\JSON\\JsonPlan-{Jahr}.json"))
             {
-                File.Delete($"C:\\Users\\wagner_p\\Documents\\Philipp Wagner\\Kaffeplan\\03_Code\\Stage1-Classic\\Kaffeeplan.Core\\Persistenz\\Data\\JSON\\JsonPlan-{Jahr}.json");
+                File.Delete(pfad + $"\\Kaffeeplan\\Data\\JSON\\JsonPlan-{Jahr}.json");
                 Statusmeldung = $"Die Datei JsonPlan-{Jahr}.json wurde erfolgreich gelöscht.";
             }
             else
@@ -199,7 +199,7 @@ namespace Kaffeeplan.App.ViewModels
         {
             try
             {
-                CsvSpeicher.Exportiere(plan, $"C:\\Users\\wagner_p\\Documents\\Philipp Wagner\\Kaffeplan\\03_Code\\Stage1-Classic\\Kaffeeplan.Core\\Persistenz\\Data\\CSV\\CSVExport-{Jahr}.csv");
+                CsvSpeicher.Exportiere(plan, pfad + $"\\Kaffeeplan\\Data\\CSV\\CSVPlan-{Jahr}.csv");
                 Statusmeldung = $"Plan für Jahr {Jahr} wurde erfolgreich als CSV-Datei exportiert.";
             }
             catch (Exception ex)

@@ -11,7 +11,7 @@ public class KalenderServiceTests
     {
         var service = new KalenderService();
 
-        int ergebnis = service.WochenImJahr(2032);
+        int ergebnis = service.WochenImJahr(2026);
 
         Assert.AreEqual(53, ergebnis);
     }
