@@ -36,22 +36,11 @@ public class PlanungsService
         {
             bool istFilterwoche = (woche - 1) % filterRhythmus == 0;
             bool lookaheadfilter = woche % filterRhythmus == 0;
-            bool tausch = false;
+
 
             int gewaehlt = WaehleMitarbeiter(
                 mitarbeiter.Count, istFilterwoche, reinigungen, filter, letzteWoche);
-            //letzteWoche[gewaehlt] = woche;
-            //int lookahead = WaehleMitarbeiter(
-            //    mitarbeiter.Count, lookaheadfilter, reinigungen, filter, letzteWoche);
-            //if (lookahead == gewaehlt)
-            //{
-            //    filter[gewaehlt] += 1;
-            //    reinigungen[gewaehlt] += 1;
-            //    gewaehlt = WaehleMitarbeiter(
-            //    mitarbeiter.Count, istFilterwoche, reinigungen, filter, letzteWoche);
-            //    reinigungen[gewaehlt] -= 1;
-            //    filter[gewaehlt] -= 1;
-            //}
+            
             if (mitarbeiter.Count == 4 && woche == 24)
                 gewaehlt--;
          
