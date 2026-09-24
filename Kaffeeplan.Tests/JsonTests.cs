@@ -9,16 +9,17 @@ namespace Kaffeeplan.Tests;
 public class JsonTests
 {
     private readonly JsonSpeicher _jsonSpeichern = new();
-    private int Jahr = 2027;
 
     [TestMethod]
-    public void LädtGleicheDaten()
+    [DataRow(2026)]
+    [DataRow(2027)]
+    public void LädtGleicheDaten(int jahr)
     {
-        var plan = ErzeugeTestplan(Jahr);
+        var plan = ErzeugeTestplan(jahr);
 
-        _jsonSpeichern.Speichern(plan, Path.GetTempPath() + $"JsonTestPlan-{Jahr}.json");
+        _jsonSpeichern.Speichern(plan, Path.GetTempPath() + $"JsonTestPlan-{jahr}.json");
 
-        var geladenerplan = _jsonSpeichern.Laden<Jahresplan>(Path.GetTempPath() + $"JsonTestPlan-{Jahr}.json");
+        var geladenerplan = _jsonSpeichern.Laden<Jahresplan>(Path.GetTempPath() + $"JsonTestPlan-{jahr}.json");
         Assert.IsNotNull(geladenerplan);
         Assert.HasCount(plan.Eintraege.Count, geladenerplan.Eintraege);
 
@@ -54,8 +55,18 @@ public class JsonTests
     [TestCleanup]
     public void LoescheTestDaten()
     {
-        File.Delete(Path.GetTempPath() + $"JsonTestPlan-{Jahr}.json");
-        File.Delete(Path.GetTempPath() + "korruptionstest.json");
+        var temp = Path.GetTempPath();
+
+        foreach (var file in Directory.EnumerateFiles(temp, "JsonTestPlan-*.json"))
+        {
+            try { File.Delete(file); } catch { }
+        }
+
+        var korruptFile = Path.Combine(temp, "korruptionstest.json");
+        if (File.Exists(korruptFile))
+        {
+            try { File.Delete(korruptFile); } catch { }
+        }
     }
 
     private static Jahresplan ErzeugeTestplan(int jahr)

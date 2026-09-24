@@ -21,4 +21,17 @@ public partial class MainWindow : Window
         InitializeComponent();
         DataContext = new MainViewModel();
     }
+
+    private void Window_PreviewKeyDown(object sender, KeyEventArgs e)
+    {
+        // Handle Delete globally even when a child control (z. B. TextBox) has focus
+        if (e.Key == Key.Delete && Keyboard.Modifiers == ModifierKeys.None)
+        {
+            if (DataContext is MainViewModel vm && vm.MitarbeiterEntfernenCommand.CanExecute(null))
+            {
+                vm.MitarbeiterEntfernenCommand.Execute(null);
+                e.Handled = true;
+            }
+        }
+    }
 }

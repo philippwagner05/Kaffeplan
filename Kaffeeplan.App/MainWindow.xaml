@@ -2,7 +2,12 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:converters="clr-namespace:Kaffeeplan.App.Converters"
-        Title="Kaffemaschinen-Dienstplan" Height="700" Width="1100">
+        Title="Kaffemaschinen-Dienstplan" Height="700" Width="1100"
+        PreviewKeyDown="Window_PreviewKeyDown">
+    <Window.InputBindings>
+        <KeyBinding Key="Delete" Command="{Binding MitarbeiterEntfernenCommand}" />
+        <KeyBinding Key="S" Modifiers="Ctrl" Command="{Binding SpeichernCommand}" />
+    </Window.InputBindings>
     <Window.Resources>
         <converters:NullToIntConverter x:Key="NullToIntConverter" />
     </Window.Resources>

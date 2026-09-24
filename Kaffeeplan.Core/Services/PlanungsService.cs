@@ -23,61 +23,98 @@ public class PlanungsService
         if (mitarbeiter.Count <= 1)
             throw new ArgumentOutOfRangeException(nameof(filterRhythmus));
 
+        int anzahl = mitarbeiter.Count;
         int wochen = _kalender.WochenImJahr(jahr);
+        
+        var wahl = new int [wochen + 1];
 
-        var reinigungen = new int[mitarbeiter.Count];
-        var filter      = new int[mitarbeiter.Count];
-        var letzteWoche  = new int[mitarbeiter.Count];
-        Array.Fill(letzteWoche, int.MinValue);
-
-        var plan = new Jahresplan { Jahr = jahr };
-
-        for (int woche = 1; woche <= wochen; woche++)
+        for (int i = 1; i <= wochen; i++)
         {
-            bool istFilterwoche = (woche - 1) % filterRhythmus == 0;
-            bool lookaheadfilter = woche % filterRhythmus == 0;
+            wahl[i] = -1;
+        }
 
+        var naechste = 0;
 
-            int gewaehlt = WaehleMitarbeiter(
-                mitarbeiter.Count, istFilterwoche, reinigungen, filter, letzteWoche);
-            
-            if (mitarbeiter.Count == 4 && woche == 24)
-                gewaehlt--;
-         
-            var aufgaben = Aufgabenart.Reinigung;
-            reinigungen[gewaehlt] += 1;
-            if (istFilterwoche)
+        for (int i = 1; i <= wochen; i++)
+        {
+            if ((i - 1) % filterRhythmus == 0)
             {
-                aufgaben |= Aufgabenart.Filtertausch;
-                filter[gewaehlt] += 1;
+                wahl[i] = naechste % anzahl;
+                naechste++;
             }
+        }
+
+        var reinigungen = new int [anzahl];
+
+        for (int i = 1; i <= wochen; i++)
+        {
+            if (wahl[i] != -1)
+                reinigungen[wahl[i]]++;
+        }
+
+        // 0 0 -1 -1 -1 -1 ... 1
+        for (int i = 1; i < wochen; i++)
+        {
+            if (wahl[i] != -1)
+                continue;
+
+            var davor = i > 1 ? wahl[i - 1] : -1;
+            var danach = i < wochen ? wahl[i + 1] : -1; 
+
+            var gewaehlt = WaehleMitarbeiter(reinigungen, davor, danach);
+            wahl [i] = gewaehlt;
+            reinigungen[gewaehlt]++;
+        }
+
+        var plan = new Jahresplan
+        {
+            Jahr = jahr
+        };
+
+        for (int i = 1; i < wochen; i++)
+        {
+            bool istFilterwoche = (i - 1) % filterRhythmus == 0;
+
+            var aufgaben = istFilterwoche ? Aufgabenart.Reinigung | Aufgabenart.Filtertausch : Aufgabenart.Reinigung;
+
             var planeintrag = new Planeintrag
             {
-                Kalenderwoche = woche,
-                MitarbeiterName = mitarbeiter[gewaehlt].Name,
-                MontagDatum = _kalender.MontageDerWoche(jahr, woche),
-                Aufgabenart = aufgaben
+                Aufgabenart = aufgaben,
+                MitarbeiterName = mitarbeiter[wahl[i]].Name,
+                Kalenderwoche = i,
+                MontagDatum = _kalender.MontageDerWoche(jahr, i)
             };
 
             plan.Eintraege.Add(planeintrag);
-
-            letzteWoche[gewaehlt] = woche;
-
-            
-        } 
+        }
 
         return plan;
     }
 
     private static int WaehleMitarbeiter(
-        int anzahl, bool istFilterwoche, int[] reinigungen, int[] filter, int [] letzteWoche)
+        int[] reinigungen, int davor, int danach) // 0 , 1
     {
-        int besterIndex = 0;
+        int besterIndex = -1; // 2
 
-        for (int i = 1; i < anzahl; i++)
+        for (int i = 0; i < reinigungen.Length; i++)
         {
-            if (IstBesser(i, besterIndex, istFilterwoche, reinigungen, filter, letzteWoche))
+            if (i == davor || i == danach)
+                continue;
+
+            if (besterIndex == -1 || reinigungen[i] < reinigungen[besterIndex])
                 besterIndex = i;
+        }
+
+        if (besterIndex == -1)
+        {
+            for (int i = 0; i < reinigungen.Length; i++)
+            {
+                if (i == davor)
+                    continue;
+
+                if (besterIndex == -1 || reinigungen[i] < reinigungen[besterIndex])
+                    besterIndex = i;
+            }
         }
         return besterIndex;
     }

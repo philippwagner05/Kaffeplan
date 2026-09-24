@@ -7,7 +7,8 @@ namespace Kaffeeplan.Tests;
 [TestClass]
 public class CsvTests
 {
-    private int Jahr = 2027;
+    private string? _tempFilePath;
+
     [TestMethod]
     public void CSVMaskierung()
     {
@@ -18,10 +19,13 @@ public class CsvTests
     }
 
     [TestMethod]
-    public void istUTFBOM()
+    [DataRow(2026)]
+    [DataRow(2027)]
+    public void istUTFBOM(int jahr)
     {
-        var plan = ErzeugeTestplan(Jahr);
-        var fullPath = Path.GetTempPath() + $"CsvTestPlan-{Jahr}.csv";
+        var plan = ErzeugeTestplan(jahr);
+        var fullPath = Path.GetTempPath() + $"CsvTestPlan-{jahr}.csv";
+        _tempFilePath = fullPath;
         CsvSpeicher.Exportiere(plan, fullPath);
         var bytes = File.ReadAllBytes(fullPath);
         Assert.IsGreaterThanOrEqualTo(3, bytes.Length, "Datei ist zu kurz");
@@ -29,11 +33,16 @@ public class CsvTests
         Assert.AreEqual(0xBB, bytes[1]);
         Assert.AreEqual(0xBF, bytes[2]);
     }
+
     [TestCleanup]
     public void LoescheTestDaten()
     {
-        File.Delete(Path.GetTempPath() + $"CsvTestPlan-{Jahr}.csv");
+        if (!string.IsNullOrEmpty(_tempFilePath) && File.Exists(_tempFilePath))
+        {
+            File.Delete(_tempFilePath);
+        }
     }
+
     private static Jahresplan ErzeugeTestplan(int jahr)
     {
         var team = new List<Mitarbeiter>
@@ -42,7 +51,7 @@ public class CsvTests
             new() { Name = "Mario"}, new() { Name = "Gabriel"},
             new() { Name = "Ehsan"}, new() { Name = "Shariyar"},
             new() { Name = "Philipp"}, new() { Name = "Michi"},
-            new() { Name = "Bernhard"}, new() { Name = "Wolfi"}
+            new() { Name = "Bernhard"}, new() { Name = "Wolfi" }
         };
 
         var service = new PlanungsService(new KalenderService());
