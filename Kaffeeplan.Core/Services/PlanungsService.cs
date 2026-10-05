@@ -21,7 +21,7 @@ public class PlanungsService
     {
         ArgumentNullException.ThrowIfNull(mitarbeiter);
         if (mitarbeiter.Count <= 1)
-            throw new ArgumentOutOfRangeException(nameof(filterRhythmus));
+            throw new ArgumentOutOfRangeException(nameof(mitarbeiter));
 
         int anzahl = mitarbeiter.Count;
         int wochen = _kalender.WochenImJahr(jahr);
@@ -53,7 +53,7 @@ public class PlanungsService
         }
 
         // 0 0 -1 -1 -1 -1 ... 1
-        for (int i = 1; i < wochen; i++)
+        for (int i = 1; i <= wochen; i++)
         {
             if (wahl[i] != -1)
                 continue;
@@ -71,7 +71,7 @@ public class PlanungsService
             Jahr = jahr
         };
 
-        for (int i = 1; i < wochen; i++)
+        for (int i = 1; i <= wochen; i++)
         {
             bool istFilterwoche = (i - 1) % filterRhythmus == 0;
 
@@ -117,21 +117,5 @@ public class PlanungsService
             }
         }
         return besterIndex;
-    }
-
-    private static bool IstBesser(
-        int kandidat, int bisher, bool istFilterwoche,
-        int[] reinigungen, int[] filter, int[] letzteWoche)
-    {
-        if (istFilterwoche && filter[kandidat] != filter[bisher])
-            return filter[kandidat] < filter[bisher];
-
-        if (reinigungen[kandidat] != reinigungen[bisher])
-            return reinigungen[kandidat] < reinigungen[bisher];
-
-        if (letzteWoche[kandidat] != letzteWoche[bisher])
-            return letzteWoche[kandidat] < letzteWoche[bisher];
-
-        return false;
     }
 }

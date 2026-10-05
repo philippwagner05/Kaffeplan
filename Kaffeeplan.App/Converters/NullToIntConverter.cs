@@ -22,6 +22,6 @@ public class NullToIntConverter : IValueConverter
         {
             return 0;
         }
-        return int.Parse(_value);
+        return int.TryParse(_value, out int parsed) ? parsed : 0;
     }
 }

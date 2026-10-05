@@ -54,7 +54,7 @@ namespace Kaffeeplan.App.ViewModels
         private readonly JsonSpeicher _jsonSpeichern = new();
         public MainViewModel()
         {
-            foreach (var name in new string[] { "Ralf", "Jochen", "Mario", "Gabriel"/*, "Ehsan", "Shariyar", "Philipp", "Michi", "Bernhard", "Wolfi"*/})
+            foreach (var name in new string[] { "Ralf", "Jochen", "Mario", "Gabriel", "Ehsan", "Shariyar"/*, "Philipp", "Michi", "Bernhard", "Wolfi"*/ })
                 Mitarbeiter.Add(new Mitarbeiter { Name = name });
             GewaehlterMitarbeiter = Mitarbeiter[0];
             PlanErzeugenCommand = new RelayCommand(GenerierePlan, () => Mitarbeiter.Count > 1);

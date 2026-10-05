@@ -24,15 +24,9 @@ Alle Tests sollen ausgeführt werden und mit grün markiert werden und somit bes
 
 ## Funktionsweise des Planungsalgorithmus
 Der Algorithmus in der Klasse PlanungsService.cs funktioniert wie folgt:
-Für jeden Mitarbeiter in der Liste gibt es einen durchlauf in dem geprüft wird, ob der jetzt ausgewählte Mitarbeiter besser geeignet ist als der zuvor als bestes ausgewählt wurde.
-Wer passenderer ist wird durch die Anzahl der Filtertausche, der Reinigungen und der Dauer, in der Sie nicht mehr dran waren, ermittelt.
-Genauer funktioniert das so:
-Wenn der ausgewählt Mitarbeiter weniger Filtertausche hat als der vorher am besten geeignet, wird er zum Besten geeigneten. Dies wird aber nur in der Filterwoche berücksichtigt.
-Wenn der ausgewählt Mitarbeiter weniger Filtertausche und weniger Reinigungen hat als der vorher am besten geeignete, wird er zum Besten geeigneten.
-Wenn der ausgewählt Mitarbeiter weniger Filtertausche, weniger Reinigungen und länger nicht dran war als der zuvor am besten geeignete, wird er zum Besten geeigneten.
-Falls dies alles nicht zutrifft, bleibt der zuvor als bester ausgewählte einfach weiterhin der am besten geeignete. 
-Nachdem dieser Vergleich für jeden Mitarbeiter in der Liste geschehen ist, wird die Person, die am besten für diese Woche geeignet ist in den Plan eingetragen. 
+Die Mitarbeiter für die Filterwochen, werden ersteinmal Reihum verteilt.
+Danach wird für jede freie Woche entschieden wer dran kommt. Wer in der Filterwoche dran ist scheidet in der Woche davor und danach sofort aus. Unter den noch übrig gebliebenen, gewinnt der, der am wenigsten Reinigungen hat Rückfall: Wenn dabei niemand übrig bleibt, wird nur die Vorwoche gesperrt, damit das Programm nicht abstürzt.
 
 ## Noch fehlende Funktionen und Einschränkungen des Programms
 1. Der Planungsalgorithmus verteilt die Personen nur pro Kalenderjahr gleichmäßig und fair. Bei bestimmten Mitarbeiteranzahlen kommen einige Personen jedes Jahr aufs Neue 2-mal dran, was es über Jahre hinweg unfair macht.
-2. Die CSV-Datei wird immer in den Ordner \\Kaffeeplan.Core\\Persistenz\\Data\\CSV gespeichert. Der Nutzer kann selbst nicht aussuchen, wo er diese speichern möchte.
+2. Die CSV-Datei wird immer in den Ordner %AppData%\\Kaffeplan\\Data\\CSV gespeichert. Der Nutzer kann selbst nicht aussuchen, wo er diese speichern möchte.
